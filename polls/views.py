@@ -2,7 +2,11 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.http import Http404
+from django.views import generic
+
 from polls.models import Poll, Choice
+
+
 # from django.template import RequestContext, loader
 
 # first part (page 3)
@@ -23,10 +27,19 @@ from polls.models import Poll, Choice
 # 	return HttpResponse(template.render(context))
 
 # third part (page 3)
-def index(request):
-	latest_poll_list = Poll.objects.order_by('-pub_date')[:5]
-	context = {'latest_poll_list': latest_poll_list}
-	return render(request, 'polls/index.html', context)
+# def index(request):
+# 	latest_poll_list = Poll.objects.order_by('-pub_date')[:5]
+# 	context = {'latest_poll_list': latest_poll_list}
+# 	return render(request, 'polls/index.html', context)
+
+# (page 4)
+class IndexView(generic.ListView):
+	template_name = 'polls/index.html'
+	context_object_name = 'latest_poll_list'
+
+	def get_queryset(self):
+		"""Return the last five published polls."""
+		return Poll.objects.order_by('-pub_date')[:5]
 
 # first part (page 3)
 # def detail(request, poll_id):
@@ -43,18 +56,28 @@ def index(request):
 # 	return render(request, 'polls/detail.html', {'poll' : poll})
 
 # third part (page 3)
-def detail(request, poll_id):
-	poll = get_object_or_404(Poll, pk=poll_id)
-	return render(request, 'polls/detail.html', {'poll' : poll})
+# def detail(request, poll_id):
+# 	poll = get_object_or_404(Poll, pk=poll_id)
+# 	return render(request, 'polls/detail.html', {'poll' : poll})
+
+# (page 4)
+class DetailView(generic.DetailView):
+	model = Poll
+	template_name = 'polls/detail.html'
 
 # (page 3)
 # def results(request, poll_id):
 # 	return HttpResponse("You're looking at the results of poll %s." % poll_id)
 
-# (page 4)
-def results(request, poll_id):
-	poll = get_object_or_404(Poll, pk=poll_id)
-	return render(request, 'polls/results.html', {'poll' : poll})
+# first part(page 4)
+# def results(request, poll_id):
+# 	poll = get_object_or_404(Poll, pk=poll_id)
+# 	return render(request, 'polls/results.html', {'poll' : poll})
+
+# second part (page 4)
+class ResultsView(generic.DetailView):
+	model = Poll
+	template_name = 'polls/results.html'
 
 # (page 3)
 # def vote(request, poll_id):
